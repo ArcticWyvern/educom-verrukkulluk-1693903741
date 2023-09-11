@@ -1,8 +1,8 @@
 <?php 
 
 // Aanpassen naar je eigen omgeving
-define("USER", "root");
-define("PASSWORD", "root");
+define("USER", "Stan");
+define("PASSWORD", "verrukkulluk");
 define("DATABASE", "verrukkulluk");
 define("HOST", "localhost");
 
