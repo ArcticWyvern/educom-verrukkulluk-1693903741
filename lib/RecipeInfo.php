@@ -50,7 +50,7 @@ class RecipeInfo {
                 }
 
             case "W": //rating
-                $queryone = "SELECT amount FROM recipeinfo WHERE id = $info_id";
+                $queryone = "SELECT rating FROM recipeinfo WHERE id = $info_id";
                 $ratingfetch = mysqli_query($this->connection, $queryone);
                 $append = mysqli_fetch_array($ratingfetch, MYSQLI_ASSOC);
                 
