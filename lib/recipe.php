@@ -111,6 +111,7 @@ class Recipe {
                 return true;
             } 
         }
+        return false;
     }
     function resultToArray($result) {
         $rows = array();
