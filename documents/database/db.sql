@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Gegenereerd op: 07 sep 2023 om 12:11
+-- Gegenereerd op: 11 sep 2023 om 11:52
 -- Serverversie: 10.4.28-MariaDB
 -- PHP-versie: 8.2.4
 
@@ -28,38 +28,20 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `article` (
-  `article_id` int(11) NOT NULL,
-  `title` varchar(30) NOT NULL,
-  `description` text NOT NULL,
-  `price` decimal(10,2) NOT NULL,
-  `calories` int(11) NOT NULL,
-  `image` varchar(100) NOT NULL
+  `id` int(11) NOT NULL,
+  `name` varchar(30) NOT NULL,
+  `description` varchar(150) NOT NULL,
+  `price` decimal(4,2) NOT NULL,
+  `image` varchar(150) NOT NULL,
+  `calories` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
-
 --
--- Tabelstructuur voor tabel `comment`
+-- Gegevens worden geëxporteerd voor tabel `article`
 --
 
-CREATE TABLE `comment` (
-  `comment_id` int(11) NOT NULL,
-  `recipe_id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `text` varchar(500) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Tabelstructuur voor tabel `favourite`
---
-
-CREATE TABLE `favourite` (
-  `fav_id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `recipe_id` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+INSERT INTO `article` (`id`, `name`, `description`, `price`, `image`, `calories`) VALUES
+(1, 'apple', 'a granny smith apple', 0.75, 'https://healthiersteps.com/wp-content/uploads/2021/12/green-apple-benefits.jpeg', 52);
 
 -- --------------------------------------------------------
 
@@ -68,7 +50,7 @@ CREATE TABLE `favourite` (
 --
 
 CREATE TABLE `ingredient` (
-  `ingredient_id` int(11) NOT NULL,
+  `id` int(11) NOT NULL,
   `recipe_id` int(11) NOT NULL,
   `article_id` int(11) NOT NULL,
   `amount` int(11) NOT NULL
@@ -81,21 +63,9 @@ CREATE TABLE `ingredient` (
 --
 
 CREATE TABLE `kitchentype` (
-  `kitchentype_id` int(11) NOT NULL,
-  `record_descriptor` varchar(1) NOT NULL,
-  `description` varchar(30) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Tabelstructuur voor tabel `rating`
---
-
-CREATE TABLE `rating` (
-  `rating_id` int(11) NOT NULL,
-  `recipe_id` int(11) NOT NULL,
-  `amount` int(3) NOT NULL
+  `id` int(11) NOT NULL,
+  `record_descriptor` varchar(2) NOT NULL,
+  `description` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -105,28 +75,35 @@ CREATE TABLE `rating` (
 --
 
 CREATE TABLE `recipe` (
-  `recipe_id` int(11) NOT NULL,
+  `id` int(11) NOT NULL,
   `kitchen_id` int(11) NOT NULL,
   `type_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `date_created` date NOT NULL DEFAULT current_timestamp(),
+  `date_created` date NOT NULL,
   `title` varchar(30) NOT NULL,
   `description` text NOT NULL,
-  `descr_short` varchar(500) NOT NULL,
-  `image` varchar(100) NOT NULL
+  `descr_short` varchar(150) NOT NULL,
+  `image` varchar(60) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Tabelstructuur voor tabel `recipestep`
+-- Tabelstructuur voor tabel `recipeinfo`
 --
 
-CREATE TABLE `recipestep` (
-  `step_id` int(11) NOT NULL,
+CREATE TABLE `recipeinfo` (
+  `id` int(11) NOT NULL,
+  `record_type` varchar(2) NOT NULL,
   `recipe_id` int(11) NOT NULL,
-  `step_num` int(11) NOT NULL,
-  `text` text NOT NULL
+  `user_id` int(11) NOT NULL,
+  `date` date NOT NULL DEFAULT current_timestamp(),
+  `numfield` int(11) DEFAULT NULL,
+  `txtfield` text DEFAULT NULL,
+  `step` int(11) DEFAULT NULL,
+  `steptext` varchar(150) DEFAULT NULL,
+  `comment` varchar(150) DEFAULT NULL,
+  `amount` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -136,11 +113,11 @@ CREATE TABLE `recipestep` (
 --
 
 CREATE TABLE `user` (
-  `user_id` int(11) NOT NULL,
-  `username` varchar(30) NOT NULL,
-  `password` varchar(30) NOT NULL,
-  `email` varchar(30) NOT NULL,
-  `image` varchar(100) NOT NULL
+  `id` int(11) NOT NULL,
+  `user_name` varchar(20) NOT NULL,
+  `password` varchar(20) NOT NULL,
+  `email` varchar(60) NOT NULL,
+  `image` varchar(60) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -151,29 +128,13 @@ CREATE TABLE `user` (
 -- Indexen voor tabel `article`
 --
 ALTER TABLE `article`
-  ADD PRIMARY KEY (`article_id`);
-
---
--- Indexen voor tabel `comment`
---
-ALTER TABLE `comment`
-  ADD PRIMARY KEY (`comment_id`),
-  ADD KEY `comment_user` (`user_id`),
-  ADD KEY `comment_recipe` (`recipe_id`);
-
---
--- Indexen voor tabel `favourite`
---
-ALTER TABLE `favourite`
-  ADD PRIMARY KEY (`fav_id`),
-  ADD KEY `fav_user` (`user_id`),
-  ADD KEY `fav_recipe` (`recipe_id`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexen voor tabel `ingredient`
 --
 ALTER TABLE `ingredient`
-  ADD PRIMARY KEY (`ingredient_id`),
+  ADD PRIMARY KEY (`id`),
   ADD KEY `ingr-article` (`article_id`),
   ADD KEY `ingr-recipe` (`recipe_id`);
 
@@ -181,36 +142,30 @@ ALTER TABLE `ingredient`
 -- Indexen voor tabel `kitchentype`
 --
 ALTER TABLE `kitchentype`
-  ADD PRIMARY KEY (`kitchentype_id`);
-
---
--- Indexen voor tabel `rating`
---
-ALTER TABLE `rating`
-  ADD PRIMARY KEY (`rating_id`),
-  ADD KEY `rating_recipe` (`recipe_id`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexen voor tabel `recipe`
 --
 ALTER TABLE `recipe`
-  ADD PRIMARY KEY (`recipe_id`),
-  ADD KEY `keuken_id` (`kitchen_id`,`type_id`,`user_id`),
-  ADD KEY `recipe_users` (`user_id`),
-  ADD KEY `recipe_type` (`type_id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `recipe_kitchen` (`kitchen_id`),
+  ADD KEY `recipe_type` (`type_id`),
+  ADD KEY `recipe_user` (`user_id`);
 
 --
--- Indexen voor tabel `recipestep`
+-- Indexen voor tabel `recipeinfo`
 --
-ALTER TABLE `recipestep`
-  ADD PRIMARY KEY (`step_id`),
-  ADD KEY `step_recipe` (`recipe_id`);
+ALTER TABLE `recipeinfo`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `info_recipe` (`recipe_id`),
+  ADD KEY `info_user` (`user_id`);
 
 --
 -- Indexen voor tabel `user`
 --
 ALTER TABLE `user`
-  ADD PRIMARY KEY (`user_id`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- AUTO_INCREMENT voor geëxporteerde tabellen
@@ -220,100 +175,63 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT voor een tabel `article`
 --
 ALTER TABLE `article`
-  MODIFY `article_id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT voor een tabel `comment`
---
-ALTER TABLE `comment`
-  MODIFY `comment_id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT voor een tabel `favourite`
---
-ALTER TABLE `favourite`
-  MODIFY `fav_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT voor een tabel `ingredient`
 --
 ALTER TABLE `ingredient`
-  MODIFY `ingredient_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT voor een tabel `kitchentype`
 --
 ALTER TABLE `kitchentype`
-  MODIFY `kitchentype_id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT voor een tabel `rating`
---
-ALTER TABLE `rating`
-  MODIFY `rating_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT voor een tabel `recipe`
 --
 ALTER TABLE `recipe`
-  MODIFY `recipe_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT voor een tabel `recipestep`
+-- AUTO_INCREMENT voor een tabel `recipeinfo`
 --
-ALTER TABLE `recipestep`
-  MODIFY `step_id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `recipeinfo`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT voor een tabel `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Beperkingen voor geëxporteerde tabellen
 --
 
 --
--- Beperkingen voor tabel `comment`
---
-ALTER TABLE `comment`
-  ADD CONSTRAINT `comment_recipe` FOREIGN KEY (`recipe_id`) REFERENCES `recipe` (`recipe_id`),
-  ADD CONSTRAINT `comment_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON UPDATE CASCADE;
-
---
--- Beperkingen voor tabel `favourite`
---
-ALTER TABLE `favourite`
-  ADD CONSTRAINT `fav_recipe` FOREIGN KEY (`recipe_id`) REFERENCES `recipe` (`recipe_id`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `fav_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON UPDATE CASCADE;
-
---
 -- Beperkingen voor tabel `ingredient`
 --
 ALTER TABLE `ingredient`
-  ADD CONSTRAINT `ingr-article` FOREIGN KEY (`article_id`) REFERENCES `article` (`article_id`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `ingr-recipe` FOREIGN KEY (`recipe_id`) REFERENCES `recipe` (`recipe_id`);
-
---
--- Beperkingen voor tabel `rating`
---
-ALTER TABLE `rating`
-  ADD CONSTRAINT `rating_recipe` FOREIGN KEY (`recipe_id`) REFERENCES `recipe` (`recipe_id`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `ingr-article` FOREIGN KEY (`article_id`) REFERENCES `article` (`id`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `ingr-recipe` FOREIGN KEY (`recipe_id`) REFERENCES `recipe` (`id`) ON UPDATE CASCADE;
 
 --
 -- Beperkingen voor tabel `recipe`
 --
 ALTER TABLE `recipe`
-  ADD CONSTRAINT `recipe_kitchen` FOREIGN KEY (`kitchen_id`) REFERENCES `kitchentype` (`kitchentype_id`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `recipe_type` FOREIGN KEY (`type_id`) REFERENCES `kitchentype` (`kitchentype_id`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `recipe_users` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `recipe_kitchen` FOREIGN KEY (`kitchen_id`) REFERENCES `kitchentype` (`id`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `recipe_type` FOREIGN KEY (`type_id`) REFERENCES `kitchentype` (`id`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `recipe_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE;
 
 --
--- Beperkingen voor tabel `recipestep`
+-- Beperkingen voor tabel `recipeinfo`
 --
-ALTER TABLE `recipestep`
-  ADD CONSTRAINT `step_recipe` FOREIGN KEY (`recipe_id`) REFERENCES `recipe` (`recipe_id`);
+ALTER TABLE `recipeinfo`
+  ADD CONSTRAINT `info_recipe` FOREIGN KEY (`recipe_id`) REFERENCES `recipe` (`id`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `info_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
