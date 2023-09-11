@@ -15,19 +15,6 @@ class RecipeInfo {
         $result = mysqli_query($this->connection, $sql);
         $recipeinfo = mysqli_fetch_array($result, MYSQLI_ASSOC);
 
-        if ($recipeinfo[1]=="O") {
-            $sql = "SELECT commenter_id, comment FROM recipeinfo WHERE id = $info_id";
-            $commentfetch = mysqli_query($this->connection, $sql);
-            $comment = mysqli_fetch_array($commentfetch, MYSQLI_ASSOC);
-            $sql = "SELECT * FROM user WHERE id = $comment[1]";
-            $user = mysqli_query($this->connection, $sql);
-            $append = mysqli_fetch_array($user, MYSQLI_ASSOC);
-
-            foreach ($append as $value) {
-                array_push($recipeinfo, $value);
-            }
-        } 
-
         switch ($recipeinfo[1]) {
             case "O": //comment
                 $queryone = "SELECT commenter_id, comment FROM recipeinfo WHERE id = $info_id";
