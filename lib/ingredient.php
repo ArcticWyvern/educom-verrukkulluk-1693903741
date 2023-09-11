@@ -1,6 +1,6 @@
 <?php
 
-class User {
+class Ingredient {
 
     private $connection;
 
@@ -20,12 +20,12 @@ class User {
     }
 
     private function selectArticle($ingr_id, $art_id) {
-        $sql = "SELECT * FROM ingredient WHERE id = $ingr_id";
+        $sql = "SELECT article_id FROM ingredient WHERE id = $ingr_id";
         
         $result = mysqli_query($this->connection, $sql);
         $ingredient = mysqli_fetch_array($result, MYSQLI_ASSOC);
 
-       if ($art_id == $ingredient[2]) { 
+       if ($art_id == $ingredient[0]) { 
             $sql = "SELECT * FROM article WHERE id = art_id";
             $stepfetch = mysqli_query($this->connection, $sql);
             $article = mysqli_fetch_array($stepfetch, MYSQLI_ASSOC);
