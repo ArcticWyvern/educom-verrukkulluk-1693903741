@@ -1,4 +1,8 @@
 <?php
+require_once 'User.php';
+require_once 'Ingredient.php';
+require_once 'KitchenType.php';
+require_once 'RecipeInfo.php';
 
 class Recipe {
     private $connection;
@@ -25,26 +29,22 @@ class Recipe {
         return($this->resultToArray($result));
     }
 
-    function selectUser($recipe_id) {
+    private function selectUser($recipe_id) {
         $sql = "SELECT user_id FROM recipe WHERE id = $recipe_id";
         
         $result = mysqli_query($this->connection, $sql);
         $recipe = mysqli_fetch_array($result, MYSQLI_ASSOC);
 
         $user_id = $recipe[0]; 
-        $sql = "SELECT * FROM user WHERE id = $user_id";
-        $userfetch = mysqli_query($this->connection, $sql);
-        $user = mysqli_fetch_array($userfetch, MYSQLI_ASSOC);
+        $user = new User($this->connection);
 
-        return($user);
+        return($user->selectUser($user_id));
     }
-    public function selectIngredient($recipe_id) {
-
-        $sql = "SELECT * FROM ingredient WHERE recipe_id = $recipe_id";
-        $ingrfetch = mysqli_query($this->connection, $sql);
+    private function selectIngredient($recipe_id) {
+        $ingrfetch = new Ingredient($this->connection);
         //$ingr = mysqli_fetch_array($ingrfetch, MYSQLI_ASSOC);
 
-        return($this->resultToArray($ingrfetch)); 
+        return($ingrfetch->selectIngredient($recipe_id)); 
         //returns nested array with each entry of the array having an array with the ingredient data in it
     }
     private function calcCalories($recipe_id) {        
@@ -74,31 +74,36 @@ class Recipe {
         }
         return $total;
     }
-    function selectRating($recipe_id) {
-        $sql = "SELECT id, date, rating FROM recipeinfo WHERE recipe_id = $recipe_id AND record_type = 'W'";
-        $ratingfetch = mysqli_query($this->connection, $sql);
-        return $this->resultToArray($ratingfetch);
+    private function selectRating($recipe_id) {
+        $info = new RecipeInfo($this->connection);
+        $info->selectInfo($recipe_id, "W"); 
+
+        return $info->selectInfo($recipe_id, "W");
     }
-    function selectSteps($recipe_id) {
-        $sql = "SELECT id, date, step, steptext FROM recipeinfo WHERE recipe_id = $recipe_id AND record_type = 'B'";
-        $stepfetch = mysqli_query($this->connection, $sql);
-        return $this->resultToArray($stepfetch);
+    private function selectSteps($recipe_id) {
+        $info = new RecipeInfo($this->connection);
+        $info->selectInfo($recipe_id, "B"); 
+
+        return $info->selectInfo($recipe_id, "B");
     }
-    function selectComments($recipe_id) {
-        $sql = "SELECT id, date, commenter_id, comment FROM recipeinfo WHERE recipe_id = $recipe_id AND record_type = 'O'";
-        $commentfetch = mysqli_query($this->connection, $sql);
-        return $this->resultToArray($commentfetch);
+    private function selectComments($recipe_id) {
+        $info = new RecipeInfo($this->connection);
+        $info->selectInfo($recipe_id, "O"); 
+
+        return $info->selectInfo($recipe_id, "O");
     }
-    function selectKitchen($recipe_id) {
+    private function selectKitchen($recipe_id) {
         $sql = "SELECT kitchen_id FROM recipe WHERE id = $recipe_id";
         $kitchen_id = mysqli_fetch_array(mysqli_query($this->connection, $sql), MYSQLI_ASSOC);
 
-        $sql = "SELECT * FROM kitchentype WHERE id = $kitchen_id[0] AND record_descriptor = 'K'";
-        $kitchenfetch = mysqli_query($this->connection, $sql);
-        return $this->resultToArray($kitchenfetch);
+        $kitchenfetch = new KitchenType($this->connection); 
+        $selected = $kitchenfetch->selectKitchenType($kitchen_id[0]);
 
+        if ($selected["record_descriptor"] == "K") {
+            return $selected;
+        }
     }
-    function selectType($recipe_id) {
+    private function selectType($recipe_id) {
         $sql = "SELECT type_id FROM recipe WHERE id = $recipe_id";
         $type_id = mysqli_fetch_array(mysqli_query($this->connection, $sql), MYSQLI_ASSOC);
 
@@ -106,18 +111,20 @@ class Recipe {
         $typefetch = mysqli_query($this->connection, $sql);
         return $this->resultToArray($typefetch);
     }
-    function determineFavourite($recipe_id, $user_id) {
+    private function determineFavourite($recipe_id, $user_id) {
         $sql = "SELECT id, fav_id FROM recipeinfo WHERE recipe_id = $recipe_id AND record_type = 'F'";
         $favfetch = mysqli_query($this->connection, $sql);
         $arr = $this->resultToArray($favfetch);
         foreach ($arr as $row) {
-            if($arr["fav_id"] == $user_id) {
+            if($row["fav_id"] == $user_id) {
                 return true;
             } 
         }
         return false;
     }
-    function resultToArray($result) {
+
+
+    private function resultToArray($result) {
         $rows = array();
         while($row = $result->fetch_assoc()) {
             $rows[] = $row;
@@ -125,9 +132,4 @@ class Recipe {
         return $rows;
     }
     
-    
-
-
-
-
 }
