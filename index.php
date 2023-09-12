@@ -4,8 +4,8 @@ require_once("lib/database.php");
 require_once("lib/article.php");
 
 /// INIT
-$db = new database();
-$art = new article($db->getConnection());
+$db = new Database();
+$art = new Article($db->getConnection());
 
 
 /// VERWERK 

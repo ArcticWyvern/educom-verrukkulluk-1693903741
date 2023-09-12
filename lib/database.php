@@ -6,7 +6,7 @@ define("PASSWORD", "verrukkulluk");
 define("DATABASE", "verrukkulluk");
 define("HOST", "localhost");
 
-class database {
+class Database {
 
     private $connection;
 
