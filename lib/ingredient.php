@@ -1,5 +1,7 @@
 <?php
 
+require_once 'Article.php';
+
 class Ingredient {
 
     private $connection;
@@ -18,21 +20,11 @@ class Ingredient {
 
     }
 
-    private function selectArticle($ingr_id, $art_id) {
-        $sql = "SELECT article_id FROM ingredient WHERE id = $ingr_id";
-        
-        $result = mysqli_query($this->connection, $sql);
-        $ingredient = mysqli_fetch_array($result, MYSQLI_ASSOC);
+    private function selectArticle($article_id) {
+        $article = new Article($this->connection);
 
-       if ($art_id == $ingredient[0]) { 
-            $sql = "SELECT * FROM article WHERE id = art_id";
-            $stepfetch = mysqli_query($this->connection, $sql);
-            $article = mysqli_fetch_array($stepfetch, MYSQLI_ASSOC);
-
-            return($article);
-       } else {
-            echo "article id does not match ingredient";
-       }
+        return($article->selectArticle($article_id));
+       
         
     }
     private function resultToArray($result) {
