@@ -8,14 +8,13 @@ class Ingredient {
         $this->connection = $connection;
     }
      
-    public function selectIngredient($ingr_id) {
+    public function selectIngredient($recipe_id) {
 
-        $sql = "SELECT * FROM ingredient WHERE id = $ingr_id";
-        
-        $result = mysqli_query($this->connection, $sql);
-        $ingredient = mysqli_fetch_array($result, MYSQLI_ASSOC);
+        $sql = "SELECT * FROM ingredient WHERE recipe_id = $recipe_id";
+        $ingrfetch = mysqli_query($this->connection, $sql);
+        //$ingr = mysqli_fetch_array($ingrfetch, MYSQLI_ASSOC);
 
-        return($ingredient);
+        return($this->resultToArray($ingrfetch));
 
     }
 
@@ -35,6 +34,13 @@ class Ingredient {
             echo "article id does not match ingredient";
        }
         
+    }
+    private function resultToArray($result) {
+        $rows = array();
+        while($row = $result->fetch_assoc()) {
+            $rows[] = $row;
+        }
+        return $rows;
     }
 
 
