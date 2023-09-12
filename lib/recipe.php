@@ -16,23 +16,27 @@ class Recipe {
         return($recipe);
     }
 
-    
 
-    function selectUser($recipe_id, $user_id) {
+    //takes an array of recipe id's to return multiple recipes. And returns a nested array of all the recipes corresponding to the id's
+    public function selectMultiple(array $id_array = []) {
+        $sql = "SELECT * FROM recipe WHERE id IN (" . implode(",", $id_array) . ")";
+        //implode separates all elements in the array with a given string (in this case a comma) thus converting this array into a string 
+        $result = mysqli_query($this->connection, $sql);
+        return($this->resultToArray($result));
+    }
+
+    function selectUser($recipe_id) {
         $sql = "SELECT user_id FROM recipe WHERE id = $recipe_id";
         
         $result = mysqli_query($this->connection, $sql);
         $recipe = mysqli_fetch_array($result, MYSQLI_ASSOC);
 
-       if ($user_id == $recipe[0]) { 
-            $sql = "SELECT * FROM user WHERE id = user_id";
-            $userfetch = mysqli_query($this->connection, $sql);
-            $user = mysqli_fetch_array($userfetch, MYSQLI_ASSOC);
+        $user_id = $recipe[0]; 
+        $sql = "SELECT * FROM user WHERE id = $user_id";
+        $userfetch = mysqli_query($this->connection, $sql);
+        $user = mysqli_fetch_array($userfetch, MYSQLI_ASSOC);
 
-            return($user);
-       } else {
-            echo "user id does not match recipe";
-       }
+        return($user);
     }
     public function selectIngredient($recipe_id) {
 
