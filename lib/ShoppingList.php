@@ -8,10 +8,30 @@ class ShoppingList {
         $this->connection = $connection;
     }
 
-    function addIngredients($recipe_id, $user_id) {
-        $fetch = new Ingredient($this->connection);
+    private function selectUser($recipe_id) {
+        $sql = "SELECT user_id FROM recipe WHERE id = $recipe_id";
+        
+        $result = mysqli_query($this->connection, $sql);
+        $recipe = mysqli_fetch_array($result, MYSQLI_ASSOC);
 
-        $ingredients = $fetch->selectIngredient($recipe_id); //nested array of ingredients (in case there are multiple)
+        $user_id = $recipe[0]; 
+        $user = new User($this->connection);
+
+        return($user->selectUser($user_id));
+    }
+
+    private function selectIngredient($recipe_id) {
+        $ingrfetch = new Ingredient($this->connection);
+        //$ingr = mysqli_fetch_array($ingrfetch, MYSQLI_ASSOC);
+
+        return($ingrfetch->selectIngredient($recipe_id)); 
+        //returns nested array with each entry of the array having an array with the ingredient data in it
+    }
+
+    function addIngredients($recipe_id, $user_id) {
+        $ingredients = $this->selectIngredient($recipe_id); 
+        
+        
         foreach ($ingredients as $ingredient) {
             if (is_array($this->articleOnList($ingredient["article_id"], $user_id))) {
                 foreach ($list as &$entry){
@@ -21,7 +41,6 @@ class ShoppingList {
                 array_push($list, $ingredient);
             }
         }
-
     }
 
 
