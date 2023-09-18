@@ -1,6 +1,7 @@
 <?php
 //// Allereerst zorgen dat de "Autoloader" uit vendor opgenomen wordt:
 require_once("./vendor/autoload.php");
+require_once("./lib/Database.php");
 
 /// Twig koppelen:
 $loader = new \Twig\Loader\FilesystemLoader("./templates");
@@ -16,8 +17,9 @@ $twig->addExtension(new \Twig\Extension\DebugExtension());
 /// Next step, iets met je data doen. Ophalen of zo
 require_once("lib/recipe.php");
 $db = new Database();
-$recipe = new Recipe($db->getConnection());
-$data = $recipe->selectRecipe(1);
+require_once("fase-2/lib/gerecht.php");
+$gerecht = new gerecht();
+$data = $gerecht->selecteerGerecht();
 
 
 /*
@@ -33,13 +35,13 @@ switch($action) {
 
         case "homepage": {
             $data = $gerecht->selecteerGerecht();
-            $template = 'detail.html.twig';
+            $template = 'homepage.html.twig';
             $title = "homepage";
             break;
         }
 
         case "detail": {
-            $data = $gerecht->selecteerGerecht($gerecht_id);
+            $data = $gerecht->selecteerGerecht();
             $template = 'detail.html.twig';
             $title = "detail pagina";
             break;

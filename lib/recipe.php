@@ -12,14 +12,39 @@ class Recipe {
         $this->connection = $connection;
     }
 
+    
     public function selectRecipe($recipe_id) {
-        $sql = "SELECT * FROM recipe WHERE id = $recipe_id";
-
-        $result = mysqli_query($this->connection, $sql);
+        // Validate and sanitize the input
+        $recipe_id = intval($recipe_id); // Convert to an integer
+    
+        // Check if $recipe_id is a valid integer value
+        if ($recipe_id <= 0) {
+            // Handle the invalid input (e.g., return an error or default value)
+            return null;
+        }
+    
+        // Use prepared statement to avoid SQL injection
+        $sql = "SELECT * FROM `recipe` WHERE id = ?";
+        $stmt = mysqli_prepare($this->connection, $sql);
+    
+        if (!$stmt) {
+            // Handle the SQL statement preparation error (e.g., log the error)
+            return null;
+        }
+    
+        mysqli_stmt_bind_param($stmt, "i", $recipe_id); // "i" represents an integer
+        mysqli_stmt_execute($stmt);
+    
+        $result = mysqli_stmt_get_result($stmt);
         $recipe = mysqli_fetch_array($result, MYSQLI_ASSOC);
-
-        return($recipe);
+    
+        mysqli_stmt_close($stmt);
+    
+        return $recipe;
     }
+    
+
+    
 
 
     //takes an array of recipe id's to return multiple recipes. And returns a nested array of all the recipes corresponding to the id's
