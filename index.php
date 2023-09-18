@@ -1,15 +1,62 @@
 <?php
+//// Allereerst zorgen dat de "Autoloader" uit vendor opgenomen wordt:
+require_once("./vendor/autoload.php");
 
-require_once("lib/database.php");
-require_once("lib/article.php");
+/// Twig koppelen:
+$loader = new \Twig\Loader\FilesystemLoader("./templates");
+/// VOOR PRODUCTIE:
+/// $twig = new \Twig\Environment($loader), ["cache" => "./cache/cc"]);
 
-/// INIT
+/// VOOR DEVELOPMENT:
+$twig = new \Twig\Environment($loader, ["debug" => true ]);
+$twig->addExtension(new \Twig\Extension\DebugExtension());
+
+/******************************/
+
+/// Next step, iets met je data doen. Ophalen of zo
+require_once("lib/recipe.php");
 $db = new Database();
-$art = new Article($db->getConnection());
+$recipe = new Recipe($db->getConnection());
+$data = $recipe->selectRecipe(1);
 
 
-/// VERWERK 
-$data = $art->selectArticle(1);
+/*
+URL:
+http://localhost/index.php?gerecht_id=4&action=detail
+*/
 
-/// RETURN
-echo var_dump($data);
+$gerecht_id = isset($_GET["gerecht_id"]) ? $_GET["gerecht_id"] : "";
+$action = isset($_GET["action"]) ? $_GET["action"] : "homepage";
+
+
+switch($action) {
+
+        case "homepage": {
+            $data = $gerecht->selecteerGerecht();
+            $template = 'detail.html.twig';
+            $title = "homepage";
+            break;
+        }
+
+        case "detail": {
+            $data = $gerecht->selecteerGerecht($gerecht_id);
+            $template = 'detail.html.twig';
+            $title = "detail pagina";
+            break;
+        }
+
+        /// etc
+
+}
+
+
+/// Onderstaande code schrijf je idealiter in een layout klasse of iets dergelijks
+/// Juiste template laden, in dit geval "homepage"
+$template = $twig->load($template);
+
+
+/// En tonen die handel!
+echo $template->render(["title" => $title, "data" => $data]);
+
+
+?>
